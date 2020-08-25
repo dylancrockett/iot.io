@@ -1,3 +1,13 @@
+# ignore editor files
+.idea
+
+# ignore scripts
+local_build.bat
+upload.bat
+
+# ignore test script
+test.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
