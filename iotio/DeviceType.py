@@ -2,11 +2,37 @@
 from .IoTClient import IoTClient
 from .types import event_pair
 
+# type checking import (prevents circular imports
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .IoTManager import IoTManager
+
 
 # superclass for device type definitions
 class DeviceType:
     def __init__(self, type_name):
-        self.type = type_name
+        # the type of device
+        self.__type = type_name
+
+        # a reference to the manager the type is running under
+        self.__context = None
+
+    @property
+    def type(self):
+        return self.__type
+
+    @property
+    def context(self) -> 'IoTManager':
+        return self.__context
+
+    # used to set the context
+    def set_context(self, context: 'IoTManager'):
+        """
+        Used to set the context of the device type. Used by the IoTManager.
+
+        :return:
+        """
+        self.__context = context
 
     # calls the specific event handler if it exists
     def call_event_handler(self, event: str, message: str, client: IoTClient) -> event_pair:

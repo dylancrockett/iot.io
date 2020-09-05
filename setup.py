@@ -1,12 +1,12 @@
 from setuptools import setup
-import iot_manager
+import iotio
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
     name="iot.io",
-    version=iot_manager.__version__,
+    version=iotio.__version__,
     packages=["iotio"],
     author="Dylan Crockett",
     author_email="dylanrcrockett@gmail.com",
@@ -17,7 +17,7 @@ setup(
     url="https://github.com/dylancrockett/iot.io",
     project_urls={
         "Documentation": "https://iotio.readthedocs.io/",
-        "Source Code": "https://github.com/dylancrockett/iot-manager"
+        "Source Code": "https://github.com/dylancrockett/iot.io"
     },
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -26,7 +26,7 @@ setup(
     ],
     install_requires=[
         'gevent',
-        'geventwebsocket',
+        'gevent-websocket',
         'flask',
         'flask-sockets',
     ],

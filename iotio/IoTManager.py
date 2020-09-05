@@ -11,7 +11,7 @@ from flask_sockets import Sockets
 from .IoTClient import IoTClient
 from .DeviceType import DeviceType
 from .error import ConnectionEnded
-from .types import event_pair
+from .types import event_pair, sendable
 
 
 # main server class
@@ -32,6 +32,9 @@ class IoTManager:
         # a dict of device types
         self.__types: Dict[str, DeviceType]
         self.__types = {}
+
+        # dict which is used for storing room information
+        self.__rooms = {}
 
         # logger for the manager
         self.logger = logging.Logger("[iot.io.server]")
@@ -69,6 +72,11 @@ class IoTManager:
 
             # call the on_disconnect handler
             self.__on_disconnect_handlers(client)
+
+            # remove the client from the rooms
+            for room in self.__rooms.keys():
+                # remove the client from the room
+                self.__rooms[room] = [x for x in self.__rooms[room] if x.id != client.id]
 
             # remove the client from the list of clients
             self.__clients = [x for x in self.__clients if client.id != x.__id]
@@ -154,11 +162,71 @@ class IoTManager:
         if not isinstance(device.type, str):
             raise ValueError("device.type is not of type str")
 
+        # give the device object context of the manager
+        device.set_context(self)
+
         # add the device to the list of device types
         self.__types.update({device.type: device})
 
         # logging output
         self.logger.debug("Successfully added DeviceType '" + device.type + "'.")
+
+    # send a message to client(s)
+    def emit(self, event: str, message: sendable, client_id: str = None, client_type: str = None, room: str = None):
+        # if a client_id is provided
+        if client_id is not None:
+            # find the client with the provided id
+            for client in self.__clients:
+                if client.id == client_id:
+                    # send the message
+                    return client.send(event, message)
+        elif client_type is not None:
+            # send messages to the clients of given types
+            for client in self.__clients:
+                if client.type == client_type:
+                    # send the message
+                    client.send(event, message)
+        elif room is not None:
+            # check if the room exists
+            if self.__rooms.get(room, None) is not None:
+                for client in self.__rooms[room]:
+                    # send the message
+                    client.send(event, message)
+        else:
+            #
+            raise ValueError("'client_id', 'client_type', or 'room' must be provided")
+
+    # add a client to a room
+    def join(self, client: IoTClient, room: str):
+        # ensure types
+        if not isinstance(client, IoTClient):
+            raise ValueError("'client' must be an instance of a IoTClient")
+        elif not isinstance(room, str):
+            raise ValueError("'room' must be an instance of str")
+
+        # check if the room exists yet
+        if self.__rooms.get(room, None) is None:
+            # create a new room entry with the client
+            self.__rooms[room] = [client]
+        else:
+            # add the client to an existing room
+            self.__rooms[room].append(client)
+
+    # remove a client from a room
+    def leave(self, client: IoTClient, room: str):
+        # ensure types
+        if not isinstance(client, IoTClient):
+            raise ValueError("'client' must be an instance of a IoTClient")
+        elif not isinstance(room, str):
+            raise ValueError("'room' must be an instance of str")
+
+        # check if the room exists
+        if self.__rooms.get(room, None) is None:
+            # exit since the room does not exist
+            return
+        else:
+            # remove the client from the room if it is there
+            self.__rooms[room] = [x for x in self.__rooms[room] if x.id != client.id]
 
     # event decorator function
     def event(self, coroutine):

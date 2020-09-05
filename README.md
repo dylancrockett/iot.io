@@ -1,5 +1,5 @@
-# IoT Manager
-### Overview
+# iot.io Server
+### iot.io Overview
 This project aims to create a lightweight and intuitive system for connecting
 IoT devices to a central server for small IoT system implementations and hobbyists.
 
@@ -53,5 +53,5 @@ if __name__ == "__main__":
 ```
 
 If you would like to see the matching quickstart guide for an example
-client go [here](https://github.com/dylancrockett/iotio_client).
+client go [here](https://github.com/dylancrockett/iot.io-client).
 
