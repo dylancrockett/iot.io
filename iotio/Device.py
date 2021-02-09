@@ -1,11 +1,11 @@
 # lib imports
-from .IoTClient import IoTClient
+from .Client import IoTClient
 from .types import event_pair
 
-# type checking import (prevents circular imports
+# type checking import (prevents circular imports)
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from .IoTManager import IoTManager
+    from .Manager import IoTManager
 
 
 # superclass for device type definitions
@@ -50,12 +50,13 @@ class DeviceType:
             # call the handler and check for a response
             response = getattr(self, "on_" + event)(message, client)
 
-            print("response: " + response)
-
             if response is None:
                 return None, None
             else:
-                return event, response
+                if isinstance(response, tuple):
+                    return response[0], response[1]
+                else:
+                    return event, response
         except AttributeError:
             return None, None
 
