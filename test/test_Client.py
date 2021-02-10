@@ -1,9 +1,20 @@
 from unittest import TestCase
-from iotio import IoTClient
+from flask import Flask
+from iotio import IoTManager, IoTClient
 from iotio.PacketEncoder import DefaultPacketEncoder
-from iotio.exceptions import ConnectionEnded
+from iotio.types import sendable
 from eventlet.websocket import WebSocket
 from typing import List
+
+
+# used for testing TestIotClient, pretends to be a functioning IoTManager
+class TestIoTManager(IoTManager):
+    def __init__(self):
+        app = Flask("")
+        super().__init__(app)
+
+    def log_update(self, client: IoTClient, event: str, data: sendable):
+        pass
 
 
 # used for testing TestIoTClient, pretends to be a functioning eventlet WebSocket object
@@ -46,7 +57,7 @@ class TestIoTClient(TestCase):
     }
     c_endpoints = []
 
-    client = IoTClient(c_socket, c_id, c_type, c_data, c_endpoints)
+    client = IoTClient(c_socket, c_id, c_type, c_data, TestIoTManager())
 
     def test_id(self):
         self.assertEqual(self.client.id, self.c_id)
@@ -57,16 +68,17 @@ class TestIoTClient(TestCase):
     def test_data(self):
         self.assertEqual(self.client.data, self.c_data)
 
+    # noinspection PyBroadException
     def test_send(self):
         try:
-            self.client.send("test", "data")
-        except ConnectionEnded:
+            self.client.emit("test", "data")
+        except Exception:
             self.fail()
 
         self.c_socket.websocket_closed = True
         try:
-            self.client.send("test", "data")
+            self.client.emit("test", "data")
             self.fail()
-        except ConnectionEnded:
+        except Exception:
             pass
         self.c_socket.websocket_closed = False

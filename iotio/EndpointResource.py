@@ -1,13 +1,17 @@
 try:
-    import flask
+    # default
     import functools
-    from flask_restful import Resource, reqparse
-    from .Endpoint import ValidationResponse, EndpointType
-
-    # type checking import (prevents circular imports)
     from typing import Callable, TYPE_CHECKING
+
     if TYPE_CHECKING:
         from .Manager import IoTManager
+
+    # external
+    import flask
+    from flask_restful import Resource, reqparse
+
+    # internal
+    from .Endpoint import ValidationResponse, EndpointType
 
 
     class EndpointResource(Resource):

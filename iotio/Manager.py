@@ -1,15 +1,23 @@
-# default lib imports
+# default
+import json
 import logging
+from cgi import parse
+from typing import List, Dict, Union, Callable
+
+# external
+import flask
 from eventlet import websocket
 from eventlet.websocket import WebSocket
-from typing import List, Dict, Union, Callable
-import json
+try:
+    from flask_restful import Api
 
-# external lib imports
-import flask
-from cgi import parse
+    FLASK_RESTFUL_INSTALLED = True
+except ImportError:
+    Api = True
 
-# lib imports
+    FLASK_RESTFUL_INSTALLED = False
+
+# internal
 from .Client import IoTClient
 from .Device import DeviceType
 from .PacketEncoder import AbstractPacketEncoder, DefaultPacketEncoder
@@ -21,18 +29,16 @@ from .Endpoint import EndpointParseResponse, ValidationResponse, AbstractEndpoin
 from .EndpointResource import EndpointResource
 from .__main__ import __protocol_version__
 
-try:
-    from flask_restful import Api
-
-    FLASK_RESTFUL_INSTALLED = True
-except ImportError:
-    Api = True
-
-    FLASK_RESTFUL_INSTALLED = False
-
 
 class IoTManagerMiddleware(object):
     def __init__(self, app, wsgi_app, manager: 'IoTManager'):
+        """
+        Manager middleware for WSGI.
+
+        :param app: Flask App object.
+        :param wsgi_app: Flask App WSGI object.
+        :param manager: IoTManager object.
+        """
         self.app = app
         self.wsgi_app = wsgi_app
         self.manager = manager
@@ -63,7 +69,7 @@ class IoTManagerMiddleware(object):
 # main class used for implementation
 class IoTManager(object):
     """
-    Main library object.
+    Main Flask extension.
     """
 
     def __init__(self, app: flask.Flask, logging_level: int = logging.ERROR, client_logging_level: int = logging.ERROR,
@@ -124,7 +130,6 @@ class IoTManager(object):
 
         # if the Api exists
         if self.api:
-            print(self.auth_decorator)
             self.api.add_resource(EndpointResource, "/iot.io", resource_class_kwargs={
                 "manager": self,
                 "auth_decorator": self.auth_decorator
@@ -151,8 +156,10 @@ class IoTManager(object):
         # get headers
         headers = dict(ws.environ["headers_raw"])
 
+        """
         for key, value in headers.items():
             print(key + ": ", value)
+        """
 
         # if id is omitted
         if "IoT-IO-Id" not in headers.keys():

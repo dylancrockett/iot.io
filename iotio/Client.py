@@ -1,14 +1,13 @@
-# default lib imports
+# default
 from typing import TYPE_CHECKING, Tuple, Union
 if TYPE_CHECKING:
     from .Manager import IoTManager
 import logging
 
-# external lib imports
-import flask
+# external
 from eventlet.websocket import WebSocket
 
-# lib imports
+# internal
 from .PacketEncoder import AbstractPacketEncoder, DefaultPacketEncoder
 from .types import sendable
 from .Endpoint import EndpointManager, EndpointParseResponse, ValidationResponse, AbstractEndpointValidator

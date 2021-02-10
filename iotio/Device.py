@@ -1,16 +1,20 @@
-# lib imports
-from .Client import IoTClient
-from .types import event_pair
-
-# type checking import (prevents circular imports)
+# default
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .Manager import IoTManager
 
+# internal
+from .Client import IoTClient
+from .types import event_pair
 
-# superclass for device type definitions
+
 class DeviceType:
-    def __init__(self, type_name):
+    def __init__(self, type_name: str):
+        """
+        Type of device as a string, should match the device_type string provided by clients when they connect.
+
+        :param type_name: Device type as a string.
+        """
         # the type of device
         self.__type = type_name
 
@@ -25,7 +29,6 @@ class DeviceType:
     def context(self) -> 'IoTManager':
         return self.__context
 
-    # used to set the context
     def set_context(self, context: 'IoTManager'):
         """
         Used to set the context of the device type. Used by the IoTManager.
@@ -34,7 +37,6 @@ class DeviceType:
         """
         self.__context = context
 
-    # calls the specific event handler if it exists
     def call_event_handler(self, event: str, message: str, client: IoTClient) -> event_pair:
         """
         Calls the event handler for the given event if it exists, if it doesnt exist then it does nothing.
@@ -47,7 +49,6 @@ class DeviceType:
         :return: None or str
         """
         try:
-            # call the handler and check for a response
             response = getattr(self, "on_" + event)(message, client)
 
             if response is None:

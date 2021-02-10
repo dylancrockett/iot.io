@@ -1,13 +1,11 @@
+# default
 from typing import Union, Dict, List, Tuple
 import enum
 
-# type which counts both int and float as valid
-num_type = Union[int, float]
 filter_list = Union[str, List[str]]
 enum_list = Dict[str, str]
 
 
-# endpoint validation responses
 class ValidationResponse(enum.Enum):
     VALID = "valid"
     INVALID_TYPE = "invalid_data_type"
@@ -23,7 +21,6 @@ class ValidationResponse(enum.Enum):
     CLIENT_NOT_CONNECTED = "client_not_connected"
 
 
-# endpoint parsing responses
 class EndpointParseResponse(enum.Enum):
     VALID = "valid"
     NO_ID_SPECIFIED = "no_id_specified"
@@ -47,7 +44,6 @@ class EndpointParseResponse(enum.Enum):
     CONSTRAINT_VALUES_VALUES_MUST_BE_STRINGS = "constraint_values_values_must_be_strings"
 
 
-# valid endpoint types
 class EndpointType(enum.Enum):
     BOOLEAN = "boolean"
     INTEGER = "integer"
@@ -137,8 +133,8 @@ class BooleanEndpointValidator(AbstractEndpointValidator):
 
 class IntegerEndpointValidator(AbstractEndpointValidator):
     def __init__(self, endpoint_id: str, name: str, special_id: Union[str, None],
-                 min_v: Union[None, num_type] = None, max_v: Union[None, num_type] = None,
-                 increment: Union[None, num_type] = None):
+                 min_v: Union[None, int] = None, max_v: Union[None, int] = None,
+                 increment: Union[None, int] = None):
         super().__init__(endpoint_id, name, special_id)
         self.type = EndpointType.INTEGER
         self.min = min_v

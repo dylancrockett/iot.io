@@ -127,43 +127,28 @@ class TestNumberEndpointValidator(TestCase):
 
     def test_validate(self):
         self.assertEqual(self.validator_1.validate(7), ValidationResponse.VALID)
-        self.assertEqual(self.validator_1.validate(7.5), ValidationResponse.VALID)
         self.assertEqual(self.validator_1.validate(3), ValidationResponse.LOWER_THAN_MIN)
-        self.assertEqual(self.validator_1.validate(3.5), ValidationResponse.LOWER_THAN_MIN)
         self.assertEqual(self.validator_1.validate(12), ValidationResponse.HIGHER_THAN_MAX)
-        self.assertEqual(self.validator_1.validate(12.5), ValidationResponse.HIGHER_THAN_MAX)
         self.assertEqual(self.validator_1.validate(""), ValidationResponse.INVALID_TYPE)
 
         self.assertEqual(self.validator_2.validate(7), ValidationResponse.VALID)
-        self.assertEqual(self.validator_2.validate(7.5), ValidationResponse.VALID)
         self.assertEqual(self.validator_2.validate(3), ValidationResponse.LOWER_THAN_MIN)
-        self.assertEqual(self.validator_2.validate(3.5), ValidationResponse.LOWER_THAN_MIN)
         self.assertEqual(self.validator_2.validate(12), ValidationResponse.VALID)
-        self.assertEqual(self.validator_2.validate(12.5), ValidationResponse.VALID)
         self.assertEqual(self.validator_2.validate(""), ValidationResponse.INVALID_TYPE)
 
         self.assertEqual(self.validator_3.validate(7), ValidationResponse.VALID)
-        self.assertEqual(self.validator_3.validate(7.5), ValidationResponse.VALID)
         self.assertEqual(self.validator_3.validate(3), ValidationResponse.VALID)
-        self.assertEqual(self.validator_3.validate(3.5), ValidationResponse.VALID)
         self.assertEqual(self.validator_3.validate(12), ValidationResponse.HIGHER_THAN_MAX)
-        self.assertEqual(self.validator_3.validate(12.5), ValidationResponse.HIGHER_THAN_MAX)
         self.assertEqual(self.validator_3.validate(""), ValidationResponse.INVALID_TYPE)
 
         self.assertEqual(self.validator_4.validate(7), ValidationResponse.VALID)
-        self.assertEqual(self.validator_4.validate(7.5), ValidationResponse.VALID)
         self.assertEqual(self.validator_4.validate(3), ValidationResponse.LOWER_THAN_MIN)
-        self.assertEqual(self.validator_4.validate(3.5), ValidationResponse.LOWER_THAN_MIN)
         self.assertEqual(self.validator_4.validate(12), ValidationResponse.HIGHER_THAN_MAX)
-        self.assertEqual(self.validator_4.validate(12.5), ValidationResponse.HIGHER_THAN_MAX)
         self.assertEqual(self.validator_4.validate(""), ValidationResponse.INVALID_TYPE)
 
         self.assertEqual(self.validator_5.validate(7), ValidationResponse.VALID)
-        self.assertEqual(self.validator_5.validate(7.5), ValidationResponse.VALID)
         self.assertEqual(self.validator_5.validate(3), ValidationResponse.VALID)
-        self.assertEqual(self.validator_5.validate(3.5), ValidationResponse.VALID)
         self.assertEqual(self.validator_5.validate(12), ValidationResponse.VALID)
-        self.assertEqual(self.validator_5.validate(12.5), ValidationResponse.VALID)
         self.assertEqual(self.validator_5.validate(""), ValidationResponse.INVALID_TYPE)
 
     def test_parse(self):
@@ -593,7 +578,7 @@ class TestEnumEndpointValidator(TestCase):
 
         self.assertEqual(data.get("id", None), self.validator.id)
         self.assertEqual(data.get("name", None), self.validator.name)
-        self.assertEqual(data.get("type", None), EndpointType.STRING.value)
+        self.assertEqual(data.get("type", None), EndpointType.ENUM.value)
         self.assertEqual(data.get("specialId", None), self.validator.special_id)
         self.assertIsNotNone(data.get("constraints", None))
         self.assertEqual(data.get("constraints").get("values", None), self.validator.values)

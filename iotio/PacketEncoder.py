@@ -1,11 +1,11 @@
+# default
+import enum
+import json
 from .types import sendable
 from abc import abstractmethod
 from typing import Tuple
-import enum
-import json
 
 
-# enumerator for packet data type
 class PacketDataType(enum.IntEnum):
     # default data types supported
     BINARY = 0
@@ -16,10 +16,8 @@ class PacketDataType(enum.IntEnum):
 
     @staticmethod
     def type_to_byte(message: sendable) -> bytearray:
-        # how many
         byte = [0]
 
-        # get the type byte
         if isinstance(message, bytearray) or isinstance(message, bytes):
             byte = PacketDataType.BINARY.to_bytes(1, "big")
         elif isinstance(message, bool):
@@ -31,12 +29,13 @@ class PacketDataType(enum.IntEnum):
         elif isinstance(message, dict) or isinstance(message, list):
             byte = PacketDataType.JSON.to_bytes(1, "big")
 
-        # return the byte
         return bytearray(byte)
 
 
-# base packet class, used to define the encoding and decoding of packets handled by the server
 class AbstractPacketEncoder:
+    """
+    Abstract implementation of a PacketEncoder. Should be used as the base class for any custom PacketEncoder classes.
+    """
     @staticmethod
     @abstractmethod
     def encode(event: str, message: sendable) -> bytearray:
@@ -50,7 +49,9 @@ class AbstractPacketEncoder:
 
 # packet object used to encode and decode messages over the iot.io protocol, can be overwritten if desired
 class DefaultPacketEncoder(AbstractPacketEncoder):
-    # encode a event and message
+    """
+    The default PackedEncoder used by the iot.io protocol. Can be changed if a custom implementation is desired.
+    """
     @staticmethod
     def encode(event: str, message: sendable) -> bytearray:
         # get the message type
@@ -86,7 +87,6 @@ class DefaultPacketEncoder(AbstractPacketEncoder):
         # return the fully encoded packet
         return message_type + event_size + event + message_size + message
 
-    # decode a event and message from a encoded packet
     @staticmethod
     def decode(data: bytearray) -> Tuple[str, sendable]:
         # get the type byte
