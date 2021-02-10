@@ -5,4 +5,4 @@ from .Device import DeviceType
 __title = "iot.io"
 __author__ = "Dylan Crockett"
 __licence__ = "MIT"
-__version__ = "0.4.0"
+__version__ = "0.4.1"
