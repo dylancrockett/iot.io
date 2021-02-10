@@ -17,39 +17,44 @@ and will print every message the client sends out to console.
 ```python
 from flask import Flask
 from iotio import IoTManager, DeviceType, IoTClient
+from eventlet import wsgi
+import eventlet
+"""
+Example implementation of a Echo server.
+
+Defines an EchoClient of type 'echo'.
+Works with the corresponding 'echo' iot.io-client example.
+"""
 
 # create a flask app
-app = Flask("iot.io demo app")
+app = Flask("Echo Example")
 
 # create an instance of the IoTManager
 manager = IoTManager(app)
 
-# define our EchoClient device
+
+# define the EchoClient device
 class EchoClient(DeviceType):
-    # announce clients connecting
     def on_connect(self, client: IoTClient):
-        print("New Ping Client Connected! ID: " + client.id)
-    
-    # define a handler for when the client recieves a "message" event
-    def on_message(self, message: str, client: IoTClient):
-        print("Message from Client with ID '" + client.id + "': " + message)
-        
-        # respond by sending a message to the client's 'message' event handler
-        return message
-    
-    # announce clients disconnecting
+        print("EchoClient Connected! ID: " + client.id)
+
+    # define a handler for when the client receives a "echo" event
+    def on_echo(self, message: str, client: IoTClient):
+        print("Message from Client of type '" + self.type + "' with ID '" + client.id + "': '", message, "'")
+
+        # respond to client with the 'echo_response' event
+        return "echo_response", message
+
     def on_disconnect(self, client: IoTClient):
-        print("Echo Client Disconnected! ID: " + client.id)
+        print("EchoClient Disconnected! ID: " + client.id)
+
 
 # add the device type to the manager
 manager.add_type(EchoClient("echo"))
 
-# run the server
+# run the server using eventlet
 if __name__ == "__main__":
-    from gevent import pywsgi
-    from geventwebsocket.handler import WebSocketHandler
-    server = pywsgi.WSGIServer(('', 5000), app, handler_class=WebSocketHandler)
-    server.serve_forever()
+    wsgi.server(eventlet.listen(('0.0.0.0', 5000)), app)
 ```
 
 If you would like to see the matching quickstart guide for an example
